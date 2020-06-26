@@ -1,0 +1,26 @@
+enclave {
+	include "sgx_trts.h"
+	include "sgx_error.h"
+
+	trusted {
+		public sgx_status_t switchless_init([user_check]void * taskque);
+		public sgx_status_t switchless_ecall();
+	};
+
+	untrusted {
+		/**
+		 * This is ocall stub to wait for new task 
+		 * @param taskqueue : this is pointer to taskqueue for which we need to wait
+		 */
+		void waitfornewtask([user_check]void * taskqueue);
+
+		int ocall_pthread_mutex_lock([user_check]void * mutex);
+		int ocall_pthread_mutex_unlock([user_check]void * mutex);
+
+		int ocall_pthread_cond_wait([user_check]void * cond, [user_check]void * mutex);
+
+		int ocall_pthread_cond_signal([user_check]void *cond);
+
+		void ocall_print_string([in, string]const char *str);
+	};
+};
